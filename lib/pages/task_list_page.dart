@@ -10,15 +10,46 @@ class TaskListPage extends StatefulWidget {
 
 class _TaskListPageState extends State<TaskListPage> {
   List<Task> tasks = [
-    Task(id: '1', name: 'Desenhar', rounds: 5, duration: 1),
-    Task(id: '2', name: 'Cozinhar', rounds: 5, duration: 30),
     Task(
-        id: '3',
-        name: 'Postar no Youtube Postar no Youtube Postar no Youtube',
-        rounds: 5,
-        duration: 30),
-    Task(id: '4', name: 'Videos novos', rounds: 5, duration: 30),
-    Task(id: '5', name: 'Projeto TCC', rounds: 5, duration: 30),
+      id: '1',
+      name: 'Desenhar',
+      rounds: 5,
+      duration: 1,
+      description: 'Alguma descrição aleatoria sobre uma tarefa',
+      date: DateTime.now(),
+    ),
+    Task(
+      id: '2',
+      name: 'Cozinhar',
+      rounds: 5,
+      duration: 30,
+      description: 'Alguma descrição aleatoria sobre uma tarefa',
+      date: DateTime.now(),
+    ),
+    Task(
+      id: '3',
+      name: 'Postar no Youtube Postar no Youtube Postar no Youtube',
+      rounds: 3,
+      duration: 10,
+      description: 'Alguma descrição aleatoria sobre uma tarefa',
+      date: DateTime.now(),
+    ),
+    Task(
+      id: '4',
+      name: 'Videos novos',
+      rounds: 3,
+      duration: 30,
+      description: 'Alguma descrição aleatoria sobre uma tarefa',
+      date: DateTime.now(),
+    ),
+    Task(
+      id: '5',
+      name: 'Projeto TCC',
+      rounds: 1,
+      duration: 30,
+      description: 'Alguma descrição aleatoria sobre uma tarefa',
+      date: DateTime.now(),
+    ),
   ];
 
   @override

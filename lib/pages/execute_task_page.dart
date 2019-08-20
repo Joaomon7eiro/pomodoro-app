@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pomodoro_app/widgets/task_timer.dart';
 import '../models/task.dart';
-import 'package:countdown_flutter/countdown_flutter.dart';
+
 import 'package:quiver/async.dart';
 
 class ExecuteTaskPage extends StatefulWidget {
@@ -9,13 +10,12 @@ class ExecuteTaskPage extends StatefulWidget {
 }
 
 class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
-  Task task;
   double progress = 0;
   CountdownTimer countdownTimer;
 
   @override
   Widget build(BuildContext context) {
-    task = ModalRoute.of(context).settings.arguments;
+    Task task = ModalRoute.of(context).settings.arguments;
     Duration duration = Duration(minutes: task.duration.toInt());
 
     if (countdownTimer == null) {
@@ -33,6 +33,7 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
       body: Container(
         margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Row(
               children: <Widget>[
@@ -67,59 +68,102 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
                 ),
               ],
             ),
+            TaskTimer(duration, progress),
             Container(
-                margin: EdgeInsets.only(top: 60),
-                height: 180,
-                child: Stack(
-                  children: <Widget>[
-                    Center(
-                      child: Container(
-                        width: 180,
-                        height: 180,
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                          backgroundColor: Colors.black,
-                          value: progress,
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(vertical: 20),
+              color: Colors.grey.shade900,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text(
+                    '1/${task.rounds}',
+                    style: TextStyle(color: Colors.grey, fontSize: 20),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Se você quer isso, lute por isso.',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40),
                         ),
-                      ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.4,
+                              child: Text(
+                                task.name,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18),
+                              ),
+                            ),
+                            Text(
+                              '${task.duration.toString()} min',
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          ],
+                        )
+                      ],
                     ),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Countdown(
-                            duration: duration,
-                            onFinish: () {
-                              print('finished!');
-                            },
-                            builder: (BuildContext ctx, Duration remaining) {
-                              duration = remaining;
-                              String sec =
-                                  (duration.inSeconds / 60).toStringAsFixed(2);
-                              int seconds =
-                                  (double.parse(sec.split(".")[1]) * 0.6)
-                                      .round();
-                              return Text(
-                                '${remaining.inMinutes}:$seconds',
-                                style: TextStyle(fontSize: 50),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.pause),
-                            onPressed: () {
-                              setState(() {
-                                progress += 0.1;
-                                print(progress);
-                              });
-                            },
-                          ),
-                        ],
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                border: BorderDirectional(
+                  start: BorderSide(color: Colors.grey.shade900, width: 3),
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        'Desc',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
-                    )
-                  ],
-                )),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Text(task.description)
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        'Data',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      SizedBox(
+                        width: 23,
+                      ),
+                      Text(task.date.toString())
+                    ],
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
