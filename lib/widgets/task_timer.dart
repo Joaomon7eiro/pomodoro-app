@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:countdown_flutter/countdown_flutter.dart';
 
 class TaskTimer extends StatelessWidget {
   final Duration duration;
   final double progress;
+  final int time;
+  final Function timerControlHandler;
+  final bool isRunning;
 
-  TaskTimer(this.duration, this.progress);
+  TaskTimer(this.duration, this.progress, this.time, this.timerControlHandler,
+      this.isRunning);
+
+  String get currentTime {
+    String timeInMinutes = (time / 60).toStringAsFixed(2);
+    int minutes = int.parse(timeInMinutes.split(".")[0]);
+    int seconds = (double.parse(timeInMinutes.split(".")[1]) * 0.6).round();
+
+    return '$minutes:$seconds';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,28 +40,17 @@ class TaskTimer extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Countdown(
-                  duration: duration,
-                  onFinish: () {
-                    print('finished!');
-                  },
-                  builder: (BuildContext ctx, Duration remaining) {
-                    String sec = (remaining.inSeconds / 60).toStringAsFixed(2);
-                    int seconds =
-                        (double.parse(sec.split(".")[1]) * 0.6).round();
-                    return Text(
-                      '${remaining.inMinutes}:$seconds',
-                      style: TextStyle(fontSize: 50, color: Colors.white70),
-                    );
-                  },
+                Text(
+                  currentTime,
+                  style: TextStyle(fontSize: 50, color: Colors.white70),
                 ),
                 IconButton(
                   iconSize: 40,
                   color: Colors.white70,
                   icon: Icon(
-                    Icons.pause,
+                    isRunning ? Icons.pause : Icons.play_arrow,
                   ),
-                  onPressed: () {},
+                  onPressed: timerControlHandler,
                 ),
               ],
             ),

@@ -78,7 +78,7 @@ class _TaskListPageState extends State<TaskListPage> {
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
-                  onPressed: () => {},
+                  onPressed: () => Navigator.pushNamed(context, '/new-task'),
                 ),
                 IconButton(
                   icon: Icon(Icons.settings),

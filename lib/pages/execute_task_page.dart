@@ -3,6 +3,9 @@ import 'package:pomodoro_app/widgets/task_timer.dart';
 import '../models/task.dart';
 
 import 'package:quiver/async.dart';
+import 'package:audioplayers/audio_cache.dart';
+
+const pauseDuration = Duration(minutes: 2);
 
 class ExecuteTaskPage extends StatefulWidget {
   @override
@@ -10,22 +13,80 @@ class ExecuteTaskPage extends StatefulWidget {
 }
 
 class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
+  int taskRounds;
+  Duration taskDuration;
+
+  Duration currentDuration;
+
+  int time;
   double progress = 0;
+  int currentRound = 1;
+
   CountdownTimer countdownTimer;
+  bool needsPause = true;
+  bool isRunning = true;
+
+  static AudioCache player = AudioCache();
+
+  void startCountdown(Duration duration) {
+    countdownTimer = CountdownTimer(duration, Duration(seconds: 1));
+    countdownTimer.listen((timer) {
+      if (time == 1 && countdownTimer.remaining.inSeconds == 0) {
+        onTaskFinished();
+        player.play('alert.wav');
+      }
+      setState(() {
+        progress = 1 -
+            (countdownTimer.remaining.inSeconds / currentDuration.inSeconds);
+        time = countdownTimer.remaining.inSeconds + 1;
+      });
+    });
+  }
+
+  void onTaskFinished() {
+    if (currentRound == taskRounds) {
+      print('terminou tudo');
+      return;
+    }
+
+    if (needsPause) {
+      setState(() {
+        startCountdown(pauseDuration);
+      });
+      currentDuration = pauseDuration;
+      needsPause = false;
+    } else {
+      setState(() {
+        startCountdown(taskDuration);
+        currentRound++;
+      });
+      currentDuration = taskDuration;
+      needsPause = true;
+    }
+  }
+
+  void timerControlHandler() {
+    if (isRunning) {
+      countdownTimer.cancel();
+      isRunning = false;
+    } else {
+      startCountdown(Duration(seconds: time));
+      isRunning = true;
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     Task task = ModalRoute.of(context).settings.arguments;
     Duration duration = Duration(minutes: task.duration.toInt());
+    taskRounds = task.rounds;
+    taskDuration = duration;
 
     if (countdownTimer == null) {
-      countdownTimer = CountdownTimer(duration, Duration(seconds: 1));
-      countdownTimer.listen((timer) {
-        setState(() {
-          progress =
-              1 - (countdownTimer.remaining.inSeconds / duration.inSeconds);
-        });
-      });
+      time = duration.inSeconds;
+      startCountdown(duration);
+      currentDuration = duration;
     }
 
     return Scaffold(
@@ -41,6 +102,7 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
                   icon: Icon(Icons.arrow_back),
                   onPressed: () {
                     countdownTimer.cancel();
+                    player.clearCache();
                     Navigator.pop(context);
                   },
                 ),
@@ -68,7 +130,7 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
                 ),
               ],
             ),
-            TaskTimer(duration, progress),
+            TaskTimer(duration, progress, time, timerControlHandler, isRunning),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20),
               padding: EdgeInsets.symmetric(vertical: 20),
@@ -78,7 +140,7 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Text(
-                    '1/${task.rounds}',
+                    '$currentRound/${task.rounds}',
                     style: TextStyle(color: Colors.grey, fontSize: 20),
                   ),
                   Container(
@@ -137,7 +199,7 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
                       Text(
                         'Desc',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                            fontWeight: FontWeight.bold, fontSize: 17),
                       ),
                       SizedBox(
                         width: 20,
@@ -153,7 +215,7 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
                       Text(
                         'Data',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                            fontWeight: FontWeight.bold, fontSize: 17),
                       ),
                       SizedBox(
                         width: 23,
