@@ -54,6 +54,11 @@ class _TaskListPageState extends State<TaskListPage> {
 
   @override
   Widget build(BuildContext context) {
+    Task task = ModalRoute.of(context).settings.arguments;
+    if (task != null && !tasks.contains(task)) {
+      tasks.add(task);
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: Container(
