@@ -21,13 +21,13 @@ class TaskTimer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
+      height: 190,
       child: Stack(
         children: <Widget>[
           Center(
             child: Container(
-              width: 200,
-              height: 200,
+              width: 190,
+              height: 190,
               child: CircularProgressIndicator(
                 strokeWidth: 5,
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -37,22 +37,26 @@ class TaskTimer extends StatelessWidget {
             ),
           ),
           Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  currentTime,
-                  style: TextStyle(fontSize: 50, color: Colors.white70),
-                ),
-                IconButton(
-                  iconSize: 40,
-                  color: Colors.white70,
-                  icon: Icon(
-                    isRunning ? Icons.pause : Icons.play_arrow,
+            child: Container(
+              width: 190,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    currentTime,
+                    style: TextStyle(fontSize: 50, color: Colors.white70),
                   ),
-                  onPressed: timerControlHandler,
-                ),
-              ],
+                  IconButton(
+                    iconSize: 40,
+                    color: Colors.white70,
+                    icon: Icon(
+                      isRunning ? Icons.pause : Icons.play_arrow,
+                    ),
+                    onPressed: timerControlHandler,
+                  ),
+                ],
+              ),
             ),
           )
         ],

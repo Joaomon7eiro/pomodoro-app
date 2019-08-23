@@ -31,15 +31,18 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
   void startCountdown(Duration duration) {
     countdownTimer = CountdownTimer(duration, Duration(seconds: 1));
     countdownTimer.listen((timer) {
-      if (time == 1 && countdownTimer.remaining.inSeconds == 0) {
-        onTaskFinished();
-        player.play('alert.wav');
-      }
       setState(() {
         progress = 1 -
             (countdownTimer.remaining.inSeconds / currentDuration.inSeconds);
         time = countdownTimer.remaining.inSeconds + 1;
       });
+      if (time == 1 && countdownTimer.remaining.inSeconds == 0) {
+        onTaskFinished();
+        player.play('alert.wav');
+        setState(() {
+          time = 0;
+        });
+      }
     });
   }
 
@@ -78,7 +81,10 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
 
   @override
   Widget build(BuildContext context) {
-    Task task = ModalRoute.of(context).settings.arguments;
+    final mediaQuery = MediaQuery.of(context);
+    final bool isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    final Task task = ModalRoute.of(context).settings.arguments;
     Duration duration = Duration(minutes: task.duration.toInt());
     taskRounds = task.rounds;
     taskDuration = duration;
@@ -92,7 +98,7 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: Container(
-        margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10),
+        margin: EdgeInsets.only(top: mediaQuery.padding.top + 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -130,102 +136,248 @@ class _ExecuteTaskPageState extends State<ExecuteTaskPage> {
                 ),
               ],
             ),
-            TaskTimer(duration, progress, time, timerControlHandler, isRunning),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              padding: EdgeInsets.symmetric(vertical: 20),
-              color: Colors.grey.shade900,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Text(
-                    '$currentRound/${task.rounds}',
-                    style: TextStyle(color: Colors.grey, fontSize: 20),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.6,
+            isLandscape
+                ? SingleChildScrollView(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          'Se você quer isso, lute por isso.',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 40),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
+                            TaskTimer(duration, progress, time,
+                                timerControlHandler, isRunning),
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.4,
-                              child: Text(
-                                task.name,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18),
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              padding: EdgeInsets.symmetric(vertical: 20),
+                              color: Colors.grey.shade900,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      '$currentRound/${task.rounds}',
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 20),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: mediaQuery.size.width * 0.6,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'Se você quer isso, lute por isso.',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 40),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Container(
+                                              width:
+                                                  mediaQuery.size.width * 0.4,
+                                              child: Text(
+                                                task.name,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18),
+                                              ),
+                                            ),
+                                            Text(
+                                              '${task.duration.toString()} min',
+                                              style:
+                                                  TextStyle(color: Colors.grey),
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Text(
-                              '${task.duration.toString()} min',
-                              style: TextStyle(color: Colors.grey),
-                            )
                           ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 20),
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            border: BorderDirectional(
+                              start: BorderSide(
+                                  color: Colors.grey.shade900, width: 3),
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    'Desc',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 17),
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(task.description)
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    'Data',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 17),
+                                  ),
+                                  SizedBox(
+                                    width: 23,
+                                  ),
+                                  Text(task.date.toString())
+                                ],
+                              ),
+                            ],
+                          ),
                         )
                       ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                border: BorderDirectional(
-                  start: BorderSide(color: Colors.grey.shade900, width: 3),
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        'Desc',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17),
+                  )
+                : Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(
+                        top: 50,
                       ),
-                      SizedBox(
-                        width: 20,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          TaskTimer(duration, progress, time,
+                              timerControlHandler, isRunning),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            color: Colors.grey.shade900,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Text(
+                                  '$currentRound/${task.rounds}',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 20),
+                                ),
+                                Container(
+                                  width: mediaQuery.size.width * 0.6,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        'Se você quer isso, lute por isso.',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 40),
+                                      ),
+                                      SizedBox(
+                                        height: 30,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Container(
+                                            width: mediaQuery.size.width * 0.4,
+                                            child: Text(
+                                              task.name,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18),
+                                            ),
+                                          ),
+                                          Text(
+                                            '${task.duration.toString()} min',
+                                            style:
+                                                TextStyle(color: Colors.grey),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 20),
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              border: BorderDirectional(
+                                start: BorderSide(
+                                    color: Colors.grey.shade900, width: 3),
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Desc',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(task.description)
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Data',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17),
+                                    ),
+                                    SizedBox(
+                                      width: 23,
+                                    ),
+                                    Text(task.date.toString())
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
                       ),
-                      Text(task.description)
-                    ],
+                    ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        'Data',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17),
-                      ),
-                      SizedBox(
-                        width: 23,
-                      ),
-                      Text(task.date.toString())
-                    ],
-                  ),
-                ],
-              ),
-            )
           ],
         ),
       ),

@@ -71,8 +71,9 @@ class _TaskListPageState extends State<TaskListPage> {
                   child: Center(
                     child: Text(
                       'Lista de Tarefas',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: MediaQuery.of(context).textScaleFactor * 22,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -91,13 +92,14 @@ class _TaskListPageState extends State<TaskListPage> {
                 ),
               ],
             ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.8972,
-              child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) {
-                  return ExpandableTask(tasks[index]);
-                },
-                itemCount: tasks.length,
+            Expanded(
+              child: Container(
+                child: ListView.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    return ExpandableTask(tasks[index]);
+                  },
+                  itemCount: tasks.length,
+                ),
               ),
             ),
           ],
