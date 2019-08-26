@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pomodoro_app/widgets/task_timer.dart';
-import '../models/task.dart';
 
 import 'package:quiver/async.dart';
 import 'package:audioplayers/audio_cache.dart';
 
-const pauseDuration = Duration(minutes: 2);
+import '../models/task.dart';
+
+const pauseDuration = Duration(minutes: 5);
 
 class ExecuteTaskPage extends StatefulWidget {
   @override
